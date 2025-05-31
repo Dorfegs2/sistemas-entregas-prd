@@ -106,6 +106,7 @@
       const senha = document.getElementById('senha').value;
 
       const resposta = await fetch('/api/registrar', {
+
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, email, senha })
