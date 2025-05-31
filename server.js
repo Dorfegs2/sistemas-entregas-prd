@@ -2,7 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const db = require('./database');
+const db = require('./backend/database');
 const bcrypt = require('bcrypt');
 
 const app = express();
@@ -20,6 +20,7 @@ app.use(bodyParser.json());
 app.post('/api/registrar', async (req, res) => {
   try {
     const { nome, email, senha } = req.body;
+    console.log('[REGISTRO] Dados recebidos:', req.body);
     if (!nome || !email || !senha) {
       return res.status(400).json({ erro: 'Todos os campos são obrigatórios' });
     }
