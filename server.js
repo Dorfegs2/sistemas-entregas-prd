@@ -2,7 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const db = require('./backend/database');
+const db = require('./database');
 const bcrypt = require('bcrypt');
 
 const app = express();
@@ -19,27 +19,20 @@ app.use(bodyParser.json());
 // Rota de registro
 app.post('/api/registrar', async (req, res) => {
   try {
-    const { nome, email, senha, endereco } = req.body;
-
-    if (!nome || !email || !senha || !endereco) {
+    const { nome, email, senha } = req.body;
+    if (!nome || !email || !senha) {
       return res.status(400).json({ erro: 'Todos os campos são obrigatórios' });
     }
 
-    const usuarioExistente = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
-    if (usuarioExistente.rows.length > 0) {
-      return res.status(400).json({ erro: 'Email já cadastrado' });
-    }
-
-    const hashedSenha = await bcrypt.hash(senha, 10);
-    await db.query(
-      'INSERT INTO usuarios (nome, email, senha, endereco) VALUES ($1, $2, $3, $4)',
-      [nome, email, hashedSenha, endereco]
+    const senhaHash = await bcrypt.hash(senha, 10);
+    const result = await db.query(
+      'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING id',
+      [nome, email, senhaHash]
     );
-
-    res.status(201).json({ mensagem: 'Usuário registrado com sucesso!' });
+    res.json({ id: result.rows[0].id });
   } catch (err) {
     console.error("Erro ao registrar:", err);
-    res.status(500).json({ erro: 'Erro ao registrar usuário' });
+    res.status(400).json({ erro: err.detail || 'Erro ao registrar usuário' });
   }
 });
 
