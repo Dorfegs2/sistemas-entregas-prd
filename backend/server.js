@@ -9,10 +9,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: 'https://sistemas-entregas-prd.vercel.app', // seu domínio real do front-end
+  origin: [
+    'https://sistemas-entregas-prd.vercel.app',
+    'https://sistemas-entregas-gfz9xpznr-dorfegs-projects.vercel.app'
+  ],
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
 }));
+
 app.use(bodyParser.json());
 
 // Rota de registro
