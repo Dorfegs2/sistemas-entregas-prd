@@ -105,7 +105,7 @@
       const email = document.getElementById('email').value;
       const senha = document.getElementById('senha').value;
 
-      const resposta = await fetch('/api/registrar', {
+      const resposta = await fetch('https://sistemas-entregas-prd.onrender.com/api/registrar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, email, senha })
