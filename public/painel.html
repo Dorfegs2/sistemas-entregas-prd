@@ -226,7 +226,9 @@
     }
 
     async function carregarSolicitacoes() {
-      const resp = await fetch(`http://localhost:3000/api/solicitacoes/${usuario_id}`);
+      const resp = await fetch(`https://sistemas-entregas-prd.onrender.com/api/solicitacoes/${usuario_id}
+
+`);
       const dados = await resp.json();
 
       const total = dados.length;
