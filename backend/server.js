@@ -9,10 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors({
-  origin: [
-    'https://sistemas-entregas-prd.vercel.app',
-    'https://sistemas-entregas-gfz9xpznr-dorfegs-projects.vercel.app'
-  ],
+  origin: 'https://sistemas-entregas-prd.vercel.app',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
 }));
@@ -23,6 +20,10 @@ app.use(bodyParser.json());
 app.post('/api/registrar', async (req, res) => {
   try {
     const { nome, email, senha } = req.body;
+    if (!nome || !email || !senha) {
+      return res.status(400).json({ erro: 'Todos os campos são obrigatórios' });
+    }
+
     const senhaHash = await bcrypt.hash(senha, 10);
     const result = await db.query(
       'INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3) RETURNING id',
@@ -30,29 +31,27 @@ app.post('/api/registrar', async (req, res) => {
     );
     res.json({ id: result.rows[0].id });
   } catch (err) {
-    res.status(400).json({ erro: 'Usuário já existe ou erro ao registrar' });
+    console.error("Erro ao registrar:", err);
+    res.status(400).json({ erro: err.detail || 'Erro ao registrar usuário' });
   }
 });
+
 
 // Rota de login
 app.post('/api/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
     const result = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
-
-    if (result.rows.length === 0) {
-      return res.status(401).json({ erro: 'Usuário não encontrado' });
-    }
-
     const user = result.rows[0];
-    const senhaOk = await bcrypt.compare(senha, user.senha);
+    if (!user) return res.status(401).json({ erro: 'Usuário não encontrado' });
 
+    const senhaOk = await bcrypt.compare(senha, user.senha);
     if (!senhaOk) return res.status(401).json({ erro: 'Senha inválida' });
 
     res.json({ id: user.id, email: user.email, nome: user.nome });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro no login' });
+    console.error("Erro no login:", err);
+    res.status(500).json({ erro: err.detail || 'Erro no login' });
   }
 });
 
