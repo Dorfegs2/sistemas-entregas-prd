@@ -42,16 +42,20 @@ app.post('/api/login', async (req, res) => {
   try {
     const { email, senha } = req.body;
     const result = await db.query('SELECT * FROM usuarios WHERE email = $1', [email]);
-    const user = result.rows[0];
-    if (!user) return res.status(401).json({ erro: 'Usuário não encontrado' });
 
+    if (result.rows.length === 0) {
+      return res.status(401).json({ erro: 'Usuário não encontrado' });
+    }
+
+    const user = result.rows[0];
     const senhaOk = await bcrypt.compare(senha, user.senha);
+
     if (!senhaOk) return res.status(401).json({ erro: 'Senha inválida' });
 
     res.json({ id: user.id, email: user.email, nome: user.nome });
   } catch (err) {
-    console.error("Erro no login:", err);
-    res.status(500).json({ erro: err.detail || 'Erro no login' });
+    console.error(err);
+    res.status(500).json({ erro: 'Erro no login' });
   }
 });
 

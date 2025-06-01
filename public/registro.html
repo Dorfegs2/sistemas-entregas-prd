@@ -79,12 +79,8 @@
     <div class="form-box">
       <form id="registroForm">
         <div class="mb-3">
-          <label for="nome" class="form-label">Nome do Estabelecimento</label>
-          <input type="text" id="nome" name="nome" class="form-control" placeholder="Ex: Lanchonete da Praça" required>
-        </div>
-        <div class="mb-3">
-          <label for="nome" class="form-label">Endereço</label>
-          <input type="text" id="nome" name="nome" class="form-control" placeholder="Ex: Rua Principal, 100 - Centro" required>
+          <label for="nome" class="form-label">Como você gostaria de ser chamado?</label>
+          <input type="text" id="nome" name="nome" class="form-control" placeholder="Seu nome" required>
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
@@ -106,12 +102,10 @@
     document.getElementById('registroForm').addEventListener('submit', async function(e) {
       e.preventDefault();
       const nome = document.getElementById('nome').value;
-      const endereco = document.getElementById('nome').value;
       const email = document.getElementById('email').value;
       const senha = document.getElementById('senha').value;
 
-      const resposta = await fetch('/api/registrar', {
-
+      const resposta = await fetch('https://sistemas-entregas-prd.onrender.com/api/registrar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome, email, senha })
